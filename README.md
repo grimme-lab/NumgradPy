@@ -1,5 +1,7 @@
-<<<<<<< HEAD
-# Template for open-source Python projects
+# NumgradPy
+Numerical gradient from whatever static property.
+
+# HISTORY: Template for open-source Python projects
 
 ![Python versions](https://img.shields.io/badge/python-3.7%20%7C%203.8%20%7C%203.9%20%7C%203.10%20%7C%203.11-blue)
 ![Tests](https://github.com/marvinfriede/python-project/actions/workflows/test.yml/badge.svg)
@@ -133,7 +135,3 @@ Tools
 Websites
 - [create .gitignore](https://www.toptal.com/developers/gitignore)
 - [choose license](https://choosealicense.com/)
-=======
-# NumgradPy
-Numerical gradient from whatever static property.
->>>>>>> 7deeda7af51b37305ae041445d90a828a538b976
