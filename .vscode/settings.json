@@ -4,17 +4,19 @@
     "editor.formatOnSave": true,
     "editor.formatOnPaste": false, // not supported by black
     "editor.insertSpaces": true,
-    "editor.tabSize": 4
+    "editor.tabSize": 4,
+    "editor.defaultFormatter": "ms-python.black-formatter"
   },
   "python.analysis.diagnosticSeverityOverrides": {
     "reportPrivateImportUsage": "information"
   },
   "python.defaultInterpreterPath": "${env:CONDA_PREFIX}/envs/base/bin/python",
-  "python.formatting.provider": "black",
+  "python.formatting.provider": "none",
   "python.linting.enabled": true,
   "python.linting.pylintEnabled": true,
   "python.linting.pylintArgs": ["--indent-string='    '"],
   "python.testing.pytestArgs": [],
   "python.testing.unittestEnabled": false,
-  "python.testing.pytestEnabled": true
+  "python.testing.pytestEnabled": true,
+  "python.analysis.typeCheckingMode": "basic"
 }
