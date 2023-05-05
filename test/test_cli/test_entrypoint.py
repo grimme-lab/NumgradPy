@@ -4,7 +4,7 @@ Test program call from command line.
 
 import pytest
 
-from squarer.cli import console_entry_point
+from numgradpy.cli import console_entry_point
 
 
 def test_entrypoint(capsys: pytest.CaptureFixture) -> None:

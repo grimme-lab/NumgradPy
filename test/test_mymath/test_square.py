@@ -7,7 +7,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from squarer.mymath import square_a_number
+from numgradpy.mymath import square_a_number
 
 
 @pytest.mark.parametrize("value", [1.0, 2, -3.0])
