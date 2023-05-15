@@ -1,5 +1,5 @@
 """
-Squarer
+NumgradPy
 =======
 
 Dummy command line tool to square a number.
