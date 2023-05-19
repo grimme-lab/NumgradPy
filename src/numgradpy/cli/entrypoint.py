@@ -4,19 +4,19 @@ Entrypoint for command line interface.
 
 from __future__ import annotations
 
-import argparse
 from collections.abc import Sequence
 
-from ..mymath import square_a_number as square
+from .argparser import parser
+
+from ..extprocs.singlepoint import single_point_calculation as spc
 
 
 def console_entry_point(argv: Sequence[str] | None = None) -> int:
-    # get command line argument
-    parser = argparse.ArgumentParser()
-    parser.add_argument("number", type=float, help="Number to square.")
-    args = parser.parse_args(argv)
+    # parse arguments
+    args = parser().parse_args(argv)
+    print(args)
 
-    # print result
-    print(square(args.number))
+    # print(square(args.number))
+    spc("binaryname", ["arguments"])
 
     return 0
