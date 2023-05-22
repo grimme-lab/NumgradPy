@@ -122,4 +122,7 @@ class Structure:
 
         print(f"{len(self.atoms)}\n")
         for atom, coordinate in zip(self.atoms, self.coordinates):
-            print(f"{atom} {coordinate[0]} {coordinate[1]} {coordinate[2]}")
+            print(
+                f"{atom:2s} {coordinate[0]:14.8f}\
+ {coordinate[1]:14.8f} {coordinate[2]:14.8f}"
+            )
