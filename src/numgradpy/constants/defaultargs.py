@@ -5,7 +5,7 @@ Module containing standard q-vSZP arguments.
 from __future__ import annotations
 
 
-def qvszp_args() -> dict[str, object]:
+def get_qvszp_args() -> dict[str, object]:
     """
     Function containing the default q-vSZP arguments.
     """
@@ -18,3 +18,19 @@ def qvszp_args() -> dict[str, object]:
     }
 
     return args
+
+
+# Function that fills a list with the elements of a dictionary
+# for the default q-vSZP arguments.
+def create_arglist(argdict: dict[str, object]) -> list[str]:
+    """
+    Function that fills a list with the elements of a dictionary
+    for the default q-vSZP arguments.
+    """
+    arglist = []
+
+    for key, value in argdict.items():
+        arglist.append("--" + key)
+        arglist.append(str(value))
+
+    return arglist

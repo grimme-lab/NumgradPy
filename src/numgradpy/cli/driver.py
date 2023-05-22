@@ -5,7 +5,9 @@ Driver for the NumGradPy CLI.
 from argparse import Namespace
 from multiprocessing import Pool
 
+from ..constants import create_arglist, get_qvszp_args
 from ..extprocs.singlepoint import single_point_calculation as spc
+from ..io import Structure
 
 
 class Driver:
@@ -32,44 +34,41 @@ class Driver:
 
         args = self.args
 
+        # get structure from file
+        struc = Structure(args.struc)
+        Structure.print_xyz(struc)
+        Structure.write_xyz(struc, "struc3.xyz")
+
         outname1 = "struc1"
         outname2 = "struc2"
+
+        qvszp_args = get_qvszp_args()
+        qvszp_arglist = create_arglist(qvszp_args)
+
+        arglist_xplus = [
+            "--struc",
+            "struc1.xyz",
+            "--outname",
+            outname1 + "_q-vSZP.out",
+        ]
+        arglist_xplus.extend(qvszp_arglist)
+        arglist_xminus = [
+            "--struc",
+            "struc2.xyz",
+            "--outname",
+            outname2 + "_q-vSZP.out",
+        ]
+        arglist_xminus.extend(qvszp_arglist)
 
         # set up list with arguments for single point calculation
         arglist = (
             {
                 "perturbation": "xplus",
-                "args": [
-                    "--struc",
-                    "struc1.xyz",
-                    "--basisfile",
-                    "/home/marcel/source_rest/qvSZP/basisq",
-                    "--ecpfile",
-                    "/home/marcel/source_rest/qvSZP/ecpq",
-                    "--mpi",
-                    "1",
-                    "--guess",
-                    "hcore",
-                    "--outname",
-                    outname1 + "_q-vSZP.out",
-                ],
+                "args": arglist_xplus,
             },
             {
                 "perturbation": "xminus",
-                "args": [
-                    "--struc",
-                    "struc2.xyz",
-                    "--basisfile",
-                    "/home/marcel/source_rest/qvSZP/basisq",
-                    "--ecpfile",
-                    "/home/marcel/source_rest/qvSZP/ecpq",
-                    "--mpi",
-                    "1",
-                    "--guess",
-                    "hcore",
-                    "--outname",
-                    outname2 + "_q-vSZP.out",
-                ],
+                "args": arglist_xminus,
             },
         )
 

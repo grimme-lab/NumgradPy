@@ -6,5 +6,4 @@ This module contains all external procedures that are required for the
 calculation of the gradient of a function.
 """
 
-from .convfactors import AA2AU, ATOMIC_NUMBER, PSE
-from .defaultargs import create_arglist, get_qvszp_args
+from .structure import Structure
