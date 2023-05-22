@@ -34,5 +34,12 @@ def parser() -> argparse.ArgumentParser:
         help="Binary that is used for the calculation.",
         required=True,
     )
+    p.add_argument(
+        "-s",
+        "--struc",
+        type=str,
+        help="Structure file that is used for the calculation.",
+        required=True,
+    )
 
     return p

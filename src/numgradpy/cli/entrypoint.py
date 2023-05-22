@@ -7,8 +7,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from .argparser import parser
-
-from ..extprocs.singlepoint import single_point_calculation as spc
+from .driver import Driver
 
 
 def console_entry_point(argv: Sequence[str] | None = None) -> int:
@@ -16,7 +15,8 @@ def console_entry_point(argv: Sequence[str] | None = None) -> int:
     args = parser().parse_args(argv)
     print(args)
 
-    # print(square(args.number))
-    spc("binaryname", ["arguments"])
+    # run driver
+    driver = Driver(args)
+    driver.run()
 
     return 0
