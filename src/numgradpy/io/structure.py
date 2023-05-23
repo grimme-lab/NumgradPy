@@ -8,6 +8,8 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 
+from ..constants import AA2AU
+
 
 class Structure:
     """
@@ -31,10 +33,11 @@ class Structure:
 
         self.filename: str = ""
         self.filetype: str = ""
+        self.nat: int = 0
         self.atoms: list[str] = []
         self.coordinates: npt.NDArray[np.float64] = np.zeros((), dtype=np.float64)
 
-    def read_xyz(self, filename: str) -> tuple[list[str], npt.NDArray[np.float64]]:
+    def read_xyz(self, filename: str) -> tuple[int, list[str], npt.NDArray[np.float64]]:
         """
         Read the structure from an XYZ file.
 
@@ -51,17 +54,22 @@ class Structure:
         if self.filetype != "xyz":
             raise ValueError("Filetype not supported.")
 
-        coordinates = []
+        coordinates: list[list[float]] = []
 
         with open(self.filename, encoding="UTF-8") as file:
             lines = file.readlines()
 
+        self.nat = int(lines[0].split()[0])
         for line in lines[2:]:
             self.atoms.append(line.split()[0])
             coordinates.append([float(x) for x in line.split()[1:]])
 
-        self.coordinates = np.array(coordinates)
-        return self.atoms, self.coordinates
+        if len(coordinates) != self.nat:
+            raise ValueError("Number of atoms does not match number of coordinates.")
+
+        # convert the whole coordinates array to atomic units
+        self.coordinates = np.array(coordinates) * AA2AU
+        return self.nat, self.atoms, self.coordinates
 
     # function that sets up an instance of the Structure class with given
     # atoms and coordinates
@@ -82,7 +90,7 @@ class Structure:
         -------
         None
         """
-
+        self.nat = len(atoms)
         self.atoms = atoms
         self.coordinates = coordinates
 
@@ -109,8 +117,8 @@ class Structure:
             # NOTE: self.coordinates is a numpy array
             for atom, coordinate in zip(self.atoms, self.coordinates):
                 file.write(
-                    f"{atom:2s} {coordinate[0]:14.8f}\
- {coordinate[1]:14.8f} {coordinate[2]:14.8f}\n"
+                    f"{atom:2s} {(coordinate[0] / AA2AU ):14.8f}\
+ {(coordinate[1] / AA2AU ):14.8f} {(coordinate[2] / AA2AU ):14.8f}\n"
                 )
 
     def get_atoms(self) -> list[str]:

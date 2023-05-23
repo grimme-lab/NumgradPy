@@ -39,13 +39,18 @@ class Driver:
         struc.read_xyz(args.struc)
         struc.print_xyz()
 
+        # numerical gradient calculation
+        # for i in range(struc.nat):
+        #     for j in range(3):
+        #         struc_mod = Structure()
+        #         struc_mod.set_structure(struc.atoms, struc.coordinates)
+        #         struc_mod.modify_structure(i, j, 0.1)
+        #         struc_mod.print_xyz()
+
         struc_mod = Structure()
         struc_mod.set_structure(struc.atoms, struc.coordinates)
         struc_mod.modify_structure(0, 0, 0.1)
         struc_mod.print_xyz()
-
-        # Structure.modify_structure(struc, 0, 0, 0.1)
-        # Structure.write_xyz(struc, "struc3.xyz")
 
         outname1 = "struc1"
         outname2 = "struc2"
