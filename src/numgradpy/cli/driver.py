@@ -35,9 +35,17 @@ class Driver:
         args = self.args
 
         # get structure from file
-        struc = Structure(args.struc)
-        Structure.print_xyz(struc)
-        Structure.write_xyz(struc, "struc3.xyz")
+        struc = Structure()
+        struc.read_xyz(args.struc)
+        struc.print_xyz()
+
+        struc_mod = Structure()
+        struc_mod.set_structure(struc.atoms, struc.coordinates)
+        struc_mod.modify_structure(0, 0, 0.1)
+        struc_mod.print_xyz()
+
+        # Structure.modify_structure(struc, 0, 0, 0.1)
+        # Structure.write_xyz(struc, "struc3.xyz")
 
         outname1 = "struc1"
         outname2 = "struc2"

@@ -15,7 +15,7 @@ class Structure:
     First, we implement only the XYZ file format.
     """
 
-    def __init__(self, filename: str) -> None:
+    def __init__(self) -> None:
         """
         Initialize the Structure class.
 
@@ -29,15 +29,12 @@ class Structure:
         None
         """
 
-        self.filename = filename
-        self.filetype = self.filename.split(".")[-1]
+        self.filename: str = ""
+        self.filetype: str = ""
         self.atoms: list[str] = []
         self.coordinates: npt.NDArray[np.float64] = np.zeros((), dtype=np.float64)
 
-        if self.filetype == "xyz":
-            self.atoms, self.coordinates = self.read_xyz()
-
-    def read_xyz(self) -> tuple[list[str], npt.NDArray[np.float64]]:
+    def read_xyz(self, filename: str) -> tuple[list[str], npt.NDArray[np.float64]]:
         """
         Read the structure from an XYZ file.
 
@@ -48,6 +45,12 @@ class Structure:
         coordinates : np.ndarray
             Array of all coordinates in the structure.
         """
+        self.filename = filename
+        self.filetype = self.filename.split(".")[-1]
+
+        if self.filetype != "xyz":
+            raise ValueError("Filetype not supported.")
+
         coordinates = []
 
         with open(self.filename, encoding="UTF-8") as file:
@@ -59,6 +62,29 @@ class Structure:
 
         self.coordinates = np.array(coordinates)
         return self.atoms, self.coordinates
+
+    # function that sets up an instance of the Structure class with given
+    # atoms and coordinates
+    def set_structure(
+        self, atoms: list[str], coordinates: npt.NDArray[np.float64]
+    ) -> None:
+        """
+        Set up the structure.
+
+        Parameters
+        ----------
+        atoms : list[str]
+            List of all atoms in the structure.
+        coordinates : np.ndarray
+            Array of all coordinates in the structure.
+
+        Returns
+        -------
+        None
+        """
+
+        self.atoms = atoms
+        self.coordinates = coordinates
 
     def write_xyz(self, newfilename: str) -> None:
         """
@@ -126,3 +152,26 @@ class Structure:
                 f"{atom:2s} {coordinate[0]:14.8f}\
  {coordinate[1]:14.8f} {coordinate[2]:14.8f}"
             )
+
+    # function for modifying the structure by adding or subtracting
+    # a small value to a variable coordinate of a single atom
+    def modify_structure(self, atom: int, coordinate: int, value: float) -> None:
+        """
+        Modify the structure by adding or subtracting a small value
+        to a variable coordinate of a single atom.
+
+        Parameters
+        ----------
+        atom : int
+            Index of the atom to be modified.
+        coordinate : int
+            Index of the coordinate to be modified.
+        value : float
+            Value to be added or subtracted.
+
+        Returns
+        -------
+        None
+        """
+
+        self.coordinates[atom][coordinate] = self.coordinates[atom][coordinate] + value
