@@ -16,43 +16,38 @@ def nuclear_gradient(struc: Structure, fdiff: float) -> None:
     # numerical gradient calculation
     smspoinput: list[tuple[str, str]] = []
     smspqinput: list[tuple[str, list[str], str]] = []
+    counter = 0
     for i in range(struc.nat):
         smspqinput = []
         smspoinput = []
+        prefix = "numdiff_" + str(i + 1) + "_"
         for j in range(3):
             # create structure object for positive perturbation
-            struc_modplus = copy.deepcopy(struc)
-            struc_modplus.modify_structure(i, j, fdiff)
-            struc_modplus.print_xyz()
+            struc_mod = copy.deepcopy(struc)
+            struc_mod.modify_structure(i, j, fdiff)
+            struc_mod.print_xyz()
             counter = 2 * (j + 1) - 1
-            prefix = "numdiff_" + str(i) + "_" + str(counter)
-            tmpstrucfile = prefix + ".xyz"
-            struc_modplus.write_xyz(tmpstrucfile)
-            smspoinput.append(("orca", prefix))
-            smspqinput.append(
-                (
-                    "qvSZP",
-                    ["--struc", tmpstrucfile, "--outname", prefix],
-                    str(counter),
-                )
-            )
+            tmpstrucfile = prefix + str(counter) + ".xyz"
+            struc_mod.write_xyz(tmpstrucfile)
             # create structure object for negative perturbation
-            struc_modminus = copy.deepcopy(struc)
-            struc_modminus.modify_structure(i, j, -fdiff)
-            struc_modminus.print_xyz()
+            struc_mod.modify_structure(i, j, -2 * fdiff)
+            struc_mod.print_xyz()
             counter = 2 * (j + 1)
-            prefix = "numdiff_" + str(i) + "_" + str(counter)
-            tmpstrucfile = prefix + ".xyz"
-            struc_modminus.write_xyz(tmpstrucfile)
+            tmpstrucfile = prefix + str(counter) + ".xyz"
+            struc_mod.write_xyz(tmpstrucfile)
+
+        if counter != 6:
+            raise RuntimeError("Something went wrong with the gradient calculation.")
+        for k in range(6):
+            prefix = "numdiff_" + str(i + 1) + "_" + str(k + 1)
             smspoinput.append(("orca", prefix))
             smspqinput.append(
                 (
                     "qvSZP",
-                    ["--struc", tmpstrucfile, "--outname", prefix],
-                    str(counter),
+                    ["--struc", prefix + ".xyz", "--outname", prefix],
+                    str(k + 1),
                 )
             )
-
         with Pool(6) as p:
             e = p.starmap(spq, smspqinput)
             if not all(e):
