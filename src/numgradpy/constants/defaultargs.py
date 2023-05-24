@@ -23,7 +23,9 @@ def get_qvszp_args() -> dict[str, object]:
         "basisfile": "/home/marcel/source_rest/qvSZP/basisq",
         "ecpfile": "/home/marcel/source_rest/qvSZP/ecpq",
         "mpi": 1,
-        "guess": "hcore",
+        "guess": "hueckel",
+        "defgrid": 3,
+        "convergence": "VeryTightSCF",
     }
 
     # check if the file exists

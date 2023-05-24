@@ -190,19 +190,3 @@ class Structure:
         self.coordinates[atom][coordinate] = self.coordinates[atom][coordinate] + value
 
         return None
-
-    # function that creates a new (independent) instance of this class as a copy of
-    # the current instance
-    def copy_structure(self) -> Structure:
-        """
-        Create a copy of the structure.
-
-        Returns
-        -------
-        struc : Structure
-            Copy of the structure.
-        """
-
-        struc = Structure()
-        struc.set_structure(self.atoms, self.coordinates)
-        return struc
