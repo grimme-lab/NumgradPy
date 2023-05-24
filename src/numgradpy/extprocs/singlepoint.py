@@ -53,8 +53,8 @@ def sp_orca(binaryname: str, calcname: str) -> int:
     """
 
     # run preparation of single point input
-    outfile = binaryname + calcname + ".out"
-    errfile = binaryname + calcname + ".err"
+    outfile = calcname + ".out"
+    errfile = calcname + ".err"
     e = runexec(binaryname, outfile, errfile, [calcname + ".inp"])
 
     return e
