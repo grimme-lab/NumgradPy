@@ -2,6 +2,7 @@
 Driver for the NumGradPy CLI.
 """
 
+import sys
 from argparse import Namespace
 from multiprocessing import Pool
 
@@ -33,25 +34,41 @@ class Driver:
         """
 
         args = self.args
+        fdiff = args.finitediff
+        fdiff = 0.1
 
         # get structure from file
         struc = Structure()
         struc.read_xyz(args.struc)
+        print("Structure from file:")
         struc.print_xyz()
 
+        struc_mod = Structure()
+        struc_mod.read_xyz(args.struc)
+        struc_mod.modify_structure(0, 0, fdiff)
+        print("Perturbed structure:")
+        struc_mod.print_xyz()
+
+        print("Original structure:")
+        struc.print_xyz()
+        print("Perturbed structures:")
         # numerical gradient calculation
-        # for i in range(struc.nat):
-        #     for j in range(3):
-        #         struc_mod = Structure()
-        #         struc_mod.set_structure(struc.atoms, struc.coordinates)
-        #         struc_mod.modify_structure(i, j, 0.1)
-        #         struc_mod.print_xyz()
+        for i in range(struc.nat):
+            for j in range(3):
+                # perturbation in positive direction
+                struc_mod = struc.copy_structure()
+                struc_mod.modify_structure(i, j, fdiff)
+                struc_mod.print_xyz()
+                # perturbation in negative direction
+                struc_mod2 = struc.copy_structure()
+                struc_mod2.modify_structure(i, j, -fdiff)
+                struc_mod2.print_xyz()
+                # print the structures
 
         struc_mod = Structure()
         struc_mod.set_structure(struc.atoms, struc.coordinates)
-        struc_mod.modify_structure(0, 0, 0.1)
-        struc_mod.print_xyz()
-
+        # struc_mod.modify_structure(i, j, fdiff)
+        # struc_mod.print_xyz()
         outname1 = "struc1"
         outname2 = "struc2"
 

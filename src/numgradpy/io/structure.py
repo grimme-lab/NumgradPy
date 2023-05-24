@@ -182,4 +182,27 @@ class Structure:
         None
         """
 
+        print(f"Modify atom {atom} coordinate {coordinate} by {value}.")
+
+        # check if the atom index is valid
+        if atom < 0 or atom > self.nat:
+            raise ValueError("Atom index out of bounds.")
         self.coordinates[atom][coordinate] = self.coordinates[atom][coordinate] + value
+
+        return None
+
+    # function that creates a new (independent) instance of this class as a copy of
+    # the current instance
+    def copy_structure(self) -> Structure:
+        """
+        Create a copy of the structure.
+
+        Returns
+        -------
+        struc : Structure
+            Copy of the structure.
+        """
+
+        struc = Structure()
+        struc.set_structure(self.atoms, self.coordinates)
+        return struc
