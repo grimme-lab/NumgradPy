@@ -5,6 +5,7 @@ Module in which the gradient functions are defined.
 from __future__ import annotations
 
 import copy
+import shutil
 from multiprocessing import Pool
 
 from ..extprocs.singlepoint import sp_orca as spo
@@ -12,7 +13,7 @@ from ..extprocs.singlepoint import sp_qvszp as spq
 from ..io import Structure
 
 
-def nuclear_gradient(struc: Structure, fdiff: float) -> None:
+def nuclear_gradient(struc: Structure, fdiff: float, startgbw: str) -> None:
     # numerical gradient calculation
     smspoinput: list[tuple[str, str]] = []
     smspqinput: list[tuple[str, list[str], str]] = []
@@ -38,9 +39,10 @@ def nuclear_gradient(struc: Structure, fdiff: float) -> None:
 
         if counter != 6:
             raise RuntimeError("Something went wrong with the gradient calculation.")
+
+        # prepare arguments for single point calculations
         for k in range(6):
             prefix = "numdiff_" + str(i + 1) + "_" + str(k + 1)
-            smspoinput.append(("orca", prefix))
             smspqinput.append(
                 (
                     "qvSZP",
@@ -48,6 +50,11 @@ def nuclear_gradient(struc: Structure, fdiff: float) -> None:
                     str(k + 1),
                 )
             )
+            smspoinput.append(("orca", prefix))
+            # copy the existing GBW file to the new GBW file
+            shutil.copy2(startgbw + ".gbw", prefix + ".gbw")
+
+        # run single point calculations of qvSZP
         with Pool(6) as p:
             e = p.starmap(spq, smspqinput)
             if not all(e):
@@ -55,6 +62,7 @@ def nuclear_gradient(struc: Structure, fdiff: float) -> None:
                     "Single point calculation failed. Check the output files."
                 )
 
+        # run single point calculations of ORCA
         with Pool(6) as p:
             e = p.starmap(spo, smspoinput)
             if not all(e):

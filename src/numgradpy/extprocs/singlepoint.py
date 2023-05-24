@@ -30,8 +30,8 @@ def sp_qvszp(binaryname: str, arguments: list[str], calcname: str) -> int:
     bin_args = qvszp_arglist + arguments
 
     # run preparation of single point input
-    outfile = binaryname + "_numdiff_" + calcname + ".out"
-    errfile = binaryname + "_numdiff_" + calcname + ".err"
+    outfile = binaryname + "_" + calcname + ".out"
+    errfile = binaryname + "_" + calcname + ".err"
     e = runexec(binaryname, outfile, errfile, bin_args)
 
     return e
