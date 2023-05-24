@@ -8,7 +8,7 @@ from argparse import Namespace
 from ..extprocs.singlepoint import sp_orca as spo
 from ..extprocs.singlepoint import sp_qvszp as spq
 from ..gradient.gradients import nuclear_gradient
-from ..io import Structure, get_orca_energy
+from ..io import Structure, get_orca_energy, write_tm_energy
 
 
 class Driver:
@@ -46,6 +46,9 @@ class Driver:
         # calculate equilibrium energy
         eq_energy = self.eq_energy(struc)
         print("Equilibrium energy: " + str(eq_energy))
+
+        # write equilibrium energy to file
+        write_tm_energy(eq_energy, "energy")
 
         # calculate nuclear gradient
         nuclear_gradient(struc, args.finitediff, self.prefix_eq)
