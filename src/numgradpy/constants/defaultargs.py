@@ -12,7 +12,6 @@ class DefaultArguments:
     Class that contains the default arguments for the different programs.
     """
 
-    programs = ["qvszp", "orca"]
     defargs: dict[str, dict[str, object]]
 
     def __init__(self) -> None:
