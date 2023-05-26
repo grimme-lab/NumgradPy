@@ -1,5 +1,5 @@
 """
-Module containing standard q-vSZP arguments.
+Module containing the default arguments for the different programs.
 """
 
 from __future__ import annotations
@@ -7,80 +7,92 @@ from __future__ import annotations
 from pathlib import Path
 
 
-def get_qvszp_args() -> dict[str, object]:
+class DefaultArguments:
     """
-    Function containing the default q-vSZP arguments.
+    Class that contains the default arguments for the different programs.
     """
-    # check if the file ".qvSZPrc" exists in the
-    # home directory of the user
-    # if yes, read the arguments from there
-    # if no, use the default arguments
-    # if the file exists, but the arguments are not
-    # valid, use the default arguments
 
-    # define the default arguments
-    args = {
-        "basisfile": "/home/marcel/source_rest/qvSZP/basisq",
-        "ecpfile": "/home/marcel/source_rest/qvSZP/ecpq",
-        "mpi": 1,
-        "guess": "hueckel",
-        "defgrid": 3,
-        "convergence": "VeryTightSCF",
-    }
+    programs = ["qvszp", "orca"]
+    defargs: dict[str, dict[str, object]]
 
-    # check if the file exists
-    qvszprc = Path.home() / ".qvSZPrc"
+    def __init__(self) -> None:
+        self.defargs = {"qvszp": self.qvszp_def_args(), "orca": {}}
 
-    if qvszprc.exists():
-        # read the arguments from the file
-        with open(qvszprc, encoding="UTF-8") as file:
+    def get_config(self) -> dict[str, dict[str, object]]:
+        """
+        Function returning the overall control dictionary.
+        """
+        numgradpyrc = Path.home() / ".numgradpyrc"
+
+        if numgradpyrc.exists():
+            self.read_config_from_file(numgradpyrc)
+
+        return self.defargs
+
+    def read_config_from_file(self, numgradpyrc: Path) -> None:
+        """
+        Read the arguments from the configuration file.
+        """
+        with open(numgradpyrc, encoding="UTF-8") as file:
             lines = file.readlines()
 
-        # check if the arguments are valid
+        dictkey = ""
         for line in lines:
             if line[0] == "#":
                 continue
+            if line.strip().lower() == "$qvszp":
+                dictkey = "qvszp"
+                continue
+            elif line.strip().lower() == "$orca":
+                dictkey = "orca"
+                continue
+            elif line.strip().lower() == "$end":
+                return
 
-            value: int | str
+            if dictkey not in self.defargs.keys():
+                raise ValueError("Invalid program name in ~/.numgradpyrc.")
 
-            # split the line into key and value
             key, value = line.split("=")
-
-            # remove whitespaces
             key = key.strip()
             value = value.strip()
+            self.check_argument(dictkey, key, value)
+            self.defargs[dictkey][key] = value
 
-            # check if the key is valid
-            if key not in args.keys():
-                continue
+    def check_argument(self, program: str, key: str, value: str | int | float) -> None:
+        if program == "qvszp":
+            qvszp_defargs = self.qvszp_def_args()
+            if key not in qvszp_defargs.keys():
+                raise ValueError("Invalid argument name in ~/.numgradpyrc.")
 
-            # check if the value is valid
             if key == "mpi":
                 try:
                     value = int(value)
-                except ValueError:
-                    continue
+                except ValueError as exc:
+                    raise ValueError(
+                        "Value for 'mpi' must be an integer in 'numgradpyrc'."
+                    ) from exc
             elif key == "guess":
-                if value.lower() not in ["hcore", "pmodel", "patom", "hueckel"]:
-                    continue
+                valid_guesses = ["hcore", "pmodel", "patom", "hueckel"]
+                try:
+                    value = str(value)
+                except ValueError as exc:
+                    raise ValueError(
+                        f"Value for 'guess' must be one of\
+ {valid_guesses} in 'numgradpyrc'."
+                    ) from exc
+                if value.lower() not in valid_guesses:
+                    raise ValueError(
+                        f"Value for 'guess' must be one of\
+ {valid_guesses} in 'numgradpyrc'."
+                    )
 
-            # if the value is valid, replace the default value
-            args[key] = value
-
-    return args
-
-
-# Function that fills a list with the elements of a dictionary
-# for the default q-vSZP arguments.
-def create_arglist(argdict: dict[str, object]) -> list[str]:
-    """
-    Function that fills a list with the elements of a dictionary
-    for the default q-vSZP arguments.
-    """
-    arglist = []
-
-    for key, value in argdict.items():
-        arglist.append("--" + key)
-        arglist.append(str(value))
-
-    return arglist
+    def qvszp_def_args(self) -> dict[str, str | object]:
+        qvszp_defargs = {
+            "basisfile": "/home/marcel/source_rest/qvSZP/basisq",
+            "ecpfile": "/home/marcel/source_rest/qvSZP/ecpq",
+            "mpi": 1,
+            "guess": "hueckel",
+            "defgrid": 3,
+            "convergence": "VeryTightSCF",
+        }
+        return qvszp_defargs

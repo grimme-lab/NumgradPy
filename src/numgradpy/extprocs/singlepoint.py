@@ -5,7 +5,7 @@ calculation, which is required for calculating the gradient of a function.
 
 from __future__ import annotations
 
-from ..constants import create_arglist, get_qvszp_args
+from ..constants import DefaultArguments
 from .helpfcts import runexec
 
 
@@ -24,7 +24,10 @@ def sp_qvszp(binaryname: str, arguments: list[str], calcname: str) -> int:
         Error code of the calculation.
     """
 
-    qvszp_default_args = get_qvszp_args()
+    controlargs = DefaultArguments()
+    config = controlargs.get_config()
+
+    qvszp_default_args = config["qvszp"]
     qvszp_arglist = create_arglist(qvszp_default_args)
 
     bin_args = qvszp_arglist + arguments
@@ -35,6 +38,20 @@ def sp_qvszp(binaryname: str, arguments: list[str], calcname: str) -> int:
     e = runexec(binaryname, outfile, errfile, bin_args)
 
     return e
+
+
+def create_arglist(argdict: dict[str, object]) -> list[str]:
+    """
+    Function that fills a list with the elements of a dictionary
+    for the default q-vSZP arguments.
+    """
+    arglist = []
+
+    for key, value in argdict.items():
+        arglist.append("--" + key)
+        arglist.append(str(value))
+
+    return arglist
 
 
 def sp_orca(binaryname: str, calcname: str) -> int:
