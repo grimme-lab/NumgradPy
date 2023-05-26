@@ -19,26 +19,30 @@ def silentremove(*args: str) -> bool:
     return True
 
 
-def checkifinpath(executable: str) -> bool:
+def checkifinpath(executable: str) -> str:
+    # if output is empty, executable is not in PATH -> FileNotFoundError
     try:
-        sp.run(["which", executable], stdout=sp.DEVNULL, stderr=sp.DEVNULL, check=True)
+        p = sp.run(["which", executable], stdout=sp.PIPE, stderr=sp.PIPE, check=True)
     except sp.CalledProcessError as e:
         raise FileNotFoundError(f"'{executable}' is not in PATH") from e
 
-    return True
+    if p.stdout == b"":
+        raise FileNotFoundError(f"'{executable}' is not in PATH")
+    else:
+        fullpath = p.stdout.decode("utf-8").strip()
+
+    return fullpath
 
 
 def runexec(executable: str, outfile: str, errfile: str, arglist: list[str]) -> bool:
-    checkifinpath(executable)
+    fpath = checkifinpath(executable)
     with open(outfile, "w", encoding="UTF-8") as stdout_file, open(
         errfile, "w", encoding="UTF-8"
     ) as stderr_file:
         try:
             # inserting all entries of arglist as
             # arguments for the executable call in sp.run()
-            sp.run(
-                [executable, *arglist], stdout=stdout_file, stderr=sp.PIPE, check=True
-            )
+            sp.run([fpath, *arglist], stdout=stdout_file, stderr=sp.PIPE, check=True)
         except sp.CalledProcessError as error:
             print(f"An error occurred: {error}")
             print(f"Error output:\n{error.stderr.decode('utf-8')}")

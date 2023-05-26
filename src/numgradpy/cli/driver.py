@@ -2,9 +2,10 @@
 Driver for the NumGradPy CLI.
 """
 
-import subprocess as sp
+import os
 from argparse import Namespace
 
+from ..constants import DefaultArguments
 from ..extprocs.singlepoint import sp_orca as spo
 from ..extprocs.singlepoint import sp_qvszp as spq
 from ..gradient.gradients import nuclear_gradient
@@ -29,6 +30,22 @@ class Driver:
         """
 
         self.args = args
+
+        controlargs = DefaultArguments()
+        config = controlargs.get_config()
+        orca_default_args = config["orca"]
+        # if key of orca_default_args contains "path", then
+        # the value is a path to the binary
+        if "path" in orca_default_args.keys():
+            # print("Setting new environment variables for ORCA...")
+            os.environ["PATH"] = (
+                str(orca_default_args["path"]) + ":" + os.environ["PATH"]
+            )
+            os.environ["LD_LIBRARY_PATH"] = (
+                str(orca_default_args["path"]) + ":" + os.environ["LD_LIBRARY_PATH"]
+            )
+            os.system("export PATH")
+            os.system("export LD_LIBRARY_PATH")
 
     def run(self) -> None:
         """
@@ -65,12 +82,7 @@ class Driver:
         )
         if not e:
             raise RuntimeError("Equilibrium energy calculation failed.")
-        orca_path = (
-            sp.run(["which", "orca"], stdout=sp.PIPE, check=True)
-            .stdout.decode("utf-8")
-            .strip()
-        )
-        e = spo(orca_path, self.prefix_eq)
+        e = spo("orca", self.prefix_eq)
         print("Equilibrium energy successfully calculated.")
         energy = get_orca_energy(self.prefix_eq + ".out")
         return energy
