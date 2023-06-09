@@ -36,7 +36,7 @@ class Driver:
         orca_default_args = config["orca"]
         # if key of orca_default_args contains "path", then
         # the value is a path to the binary
-        if "path" in orca_default_args.keys():
+        if "path" in orca_default_args:
             # print("Setting new environment variables for ORCA...")
             os.environ["PATH"] = (
                 str(orca_default_args["path"]) + ":" + os.environ["PATH"]

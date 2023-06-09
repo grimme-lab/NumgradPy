@@ -48,7 +48,7 @@ class DefaultArguments:
             elif line.strip().lower() == "$end":
                 return
 
-            if dictkey not in self.defargs.keys():
+            if dictkey not in self.defargs:
                 raise ValueError("Invalid program name in ~/.numgradpyrc.")
 
             key, value = line.split("=")
@@ -60,7 +60,7 @@ class DefaultArguments:
     def check_argument(self, program: str, key: str, value: str | int | float) -> None:
         if program == "qvszp":
             qvszp_defargs = self.qvszp_def_args()
-            if key not in qvszp_defargs.keys():
+            if key not in qvszp_defargs:
                 raise ValueError("Invalid argument name in ~/.numgradpyrc.")
 
             if key == "mpi":
