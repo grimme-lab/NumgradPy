@@ -3,6 +3,7 @@ Driver for the NumGradPy CLI.
 """
 
 import os
+import shutil
 from argparse import Namespace
 
 from ..constants import DefaultArguments
@@ -57,6 +58,9 @@ class Driver:
         # get structure from file
         struc = Structure()
         struc.read_xyz(args.struc)
+        # if args.struc corresponds to 'coord', copy 'coord' to 'coord.bak'
+        if args.struc == "coord":
+            shutil.copy2("coord", "coord.bak")
         print("Structure from file:")
         struc.print_xyz()
 
@@ -68,12 +72,25 @@ class Driver:
         write_tm_energy(eq_energy, "energy")
 
         # calculate nuclear gradient
-        nuclear_gradient(struc, args.finitediff, self.prefix_eq)
+        gradient = nuclear_gradient(struc, args.finitediff, self.prefix_eq)
+
+        # print the gradient matrix in nice format
+        print("Gradient matrix:")
+        for i in range(struc.nat):
+            print(
+                f"{gradient[i, 0]:10.6f} {gradient[i, 1]:10.6f} {gradient[i, 2]:10.6f}"
+            )
 
     def eq_energy(self, eqstruc: Structure) -> float:
         """
         Calculate the equilibrium energy of a structure.
         """
+
+        # delete the following files if they are present
+        if os.path.exists(self.prefix_eq + ".gbw"):
+            os.remove(self.prefix_eq + ".gbw")
+        if os.path.exists(self.prefix_eq + ".densities"):
+            os.remove(self.prefix_eq + ".densities")
         Structure.write_xyz(eqstruc, self.prefix_eq + ".xyz")
         e = spq(
             "qvSZP",

@@ -92,6 +92,7 @@ class DefaultArguments:
             "mpi": 1,
             "guess": "hueckel",
             "defgrid": 3,
-            "convergence": "VeryTightSCF",
+            "conv": "VeryTightSCF",
+            "rdq": None,
         }
         return qvszp_defargs
