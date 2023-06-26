@@ -10,7 +10,7 @@ from ..constants import DefaultArguments
 from ..extprocs.singlepoint import sp_orca as spo
 from ..extprocs.singlepoint import sp_qvszp as spq
 from ..gradient.gradients import nuclear_gradient
-from ..io import Structure, get_orca_energy, write_tm_energy
+from ..io import Structure, get_orca_energy, write_tm_energy, write_tm_gradient
 
 
 class Driver:
@@ -80,6 +80,7 @@ class Driver:
             print(
                 f"{gradient[i, 0]:10.6f} {gradient[i, 1]:10.6f} {gradient[i, 2]:10.6f}"
             )
+        write_tm_gradient(gradient, eq_energy, struc, "gradient")
 
     def eq_energy(self, eqstruc: Structure) -> float:
         """

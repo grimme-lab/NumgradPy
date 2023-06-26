@@ -147,7 +147,7 @@ class Structure:
 
     def print_xyz(self) -> None:
         """
-        Print the structure in XYZ format.
+        Print the structure in atomic units (coord) format.
 
         Returns
         -------
