@@ -59,14 +59,14 @@ def write_tm_gradient(
         )
         for i in range(struc.nat):
             print(
-                f"{struc.coordinates[i, 0]:14.8f} \
-{struc.coordinates[i, 1]:14.8f} \
-{struc.coordinates[i, 2]:14.8f} {struc.atoms[i]}",
+                f"{struc.coordinates[i, 0]:18.12f} \
+{struc.coordinates[i, 1]:18.12f} \
+{struc.coordinates[i, 2]:18.12f} {struc.atoms[i]}",
                 file=f,
             )
         for i in range(gradient.shape[0]):
             print(
-                f"{gradient[i, 0]:14.8f} {gradient[i, 1]:14.8f} {gradient[i, 2]:14.8f}",
+                f"{gradient[i, 0]:18.12f} {gradient[i, 1]:18.12f} {gradient[i, 2]:18.12f}",
                 file=f,
             )
         print("$end", file=f)

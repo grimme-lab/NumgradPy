@@ -3,6 +3,7 @@ Module providing conversion factors for different units.
 """
 
 AA2AU = 1.8897261246204404
+# AA2AU = 1.88972594929722 ## OLD CONSTANT
 """Factor for conversion from angstrom to atomic units."""
 
 PSE = {

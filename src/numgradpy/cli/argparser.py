@@ -41,5 +41,13 @@ def parser() -> argparse.ArgumentParser:
         help="Structure file that is used for the calculation.",
         required=True,
     )
+    p.add_argument(
+        "-v",
+        "--verbose",
+        default=False,
+        action="store_true",
+        help="Print more information to the console.",
+        required=False,
+    )
 
     return p

@@ -13,7 +13,8 @@ from .driver import Driver
 def console_entry_point(argv: Sequence[str] | None = None) -> int:
     # parse arguments
     args = parser().parse_args(argv)
-    print(args)
+    if args.verbose:
+        print(args)
 
     # run driver
     driver = Driver(args)

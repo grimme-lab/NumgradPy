@@ -17,7 +17,10 @@ from ..io import Structure, get_orca_energy
 
 
 def nuclear_gradient(
-    struc: Structure, fdiff: float, startgbw: str
+    struc: Structure,
+    fdiff: float,
+    startgbw: str,
+    verbose: bool,
 ) -> npt.NDArray[np.float64]:
     # set up a numpy tensor for the gradient
     gradient = np.zeros((struc.nat, 3), dtype=np.float64)
@@ -32,11 +35,12 @@ def nuclear_gradient(
         for j in range(3):
             # create structure object for positive perturbation
             struc_mod = copy.deepcopy(struc)
-            struc_mod.modify_structure(i, j, fdiff)
-            struc_mod.print_xyz()
+            struc_mod.modify_structure(i, j, fdiff, verbose=verbose)
+            if verbose:
+                struc_mod.print_xyz()
             counter = 2 * (j + 1) - 1
             tmpstrucfile = prefix + str(counter) + ".xyz"
-            struc_mod.write_xyz(tmpstrucfile)
+            struc_mod.write_xyz(tmpstrucfile, verbose=verbose)
             es = spq(
                 "qvSZP",
                 ["--struc", tmpstrucfile, "--outname", prefix + str(counter)],
@@ -45,11 +49,12 @@ def nuclear_gradient(
             if not es:
                 raise RuntimeError("Single point calculation failed.")
             # create structure object for negative perturbation
-            struc_mod.modify_structure(i, j, -2 * fdiff)
-            struc_mod.print_xyz()
+            struc_mod.modify_structure(i, j, -2 * fdiff, verbose=verbose)
+            if verbose:
+                struc_mod.print_xyz()
             counter = 2 * (j + 1)
             tmpstrucfile = prefix + str(counter) + ".xyz"
-            struc_mod.write_xyz(tmpstrucfile)
+            struc_mod.write_xyz(tmpstrucfile, verbose=verbose)
             es = spq(
                 "qvSZP",
                 ["--struc", tmpstrucfile, "--outname", prefix + str(counter)],

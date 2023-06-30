@@ -94,7 +94,7 @@ class Structure:
         self.atoms = atoms
         self.coordinates = coordinates
 
-    def write_xyz(self, newfilename: str) -> None:
+    def write_xyz(self, newfilename: str, verbose: bool) -> None:
         """
         Write the structure to an XYZ file.
 
@@ -109,6 +109,9 @@ class Structure:
         -------
         None
         """
+
+        if verbose:
+            print(f"Writing structure to {newfilename}.")
 
         with open(newfilename, "w", encoding="UTF-8") as file:
             file.write(f"{len(self.atoms)}\n\n")
@@ -163,7 +166,9 @@ class Structure:
 
     # function for modifying the structure by adding or subtracting
     # a small value to a variable coordinate of a single atom
-    def modify_structure(self, atom: int, coordinate: int, value: float) -> None:
+    def modify_structure(
+        self, atom: int, coordinate: int, value: float, verbose: bool
+    ) -> None:
         """
         Modify the structure by adding or subtracting a small value
         to a variable coordinate of a single atom.
@@ -182,7 +187,8 @@ class Structure:
         None
         """
 
-        print(f"Modify atom {atom} coordinate {coordinate} by {value}.")
+        if verbose:
+            print(f"Modify atom {atom} coordinate {coordinate} by {value}.")
 
         # check if the atom index is valid
         if atom < 0 or atom > self.nat:

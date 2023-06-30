@@ -61,8 +61,9 @@ class Driver:
         # if args.struc corresponds to 'coord', copy 'coord' to 'coord.bak'
         if args.struc == "coord":
             shutil.copy2("coord", "coord.bak")
-        print("Structure from file:")
-        struc.print_xyz()
+        if args.verbose:
+            print("Structure from file:")
+            struc.print_xyz()
 
         # calculate equilibrium energy
         eq_energy = self.eq_energy(struc)
@@ -72,7 +73,9 @@ class Driver:
         write_tm_energy(eq_energy, "energy")
 
         # calculate nuclear gradient
-        gradient = nuclear_gradient(struc, args.finitediff, self.prefix_eq)
+        gradient = nuclear_gradient(
+            struc, args.finitediff, self.prefix_eq, args.verbose
+        )
 
         # print the gradient matrix in nice format
         print("Gradient matrix:")
@@ -92,7 +95,7 @@ class Driver:
             os.remove(self.prefix_eq + ".gbw")
         if os.path.exists(self.prefix_eq + ".densities"):
             os.remove(self.prefix_eq + ".densities")
-        Structure.write_xyz(eqstruc, self.prefix_eq + ".xyz")
+        Structure.write_xyz(eqstruc, self.prefix_eq + ".xyz", verbose=self.args.verbose)
         e = spq(
             "qvSZP",
             ["--struc", "eq.xyz", "--outname", self.prefix_eq, "--mpi", "4"],
