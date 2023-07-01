@@ -9,7 +9,9 @@ from ..constants import DefaultArguments
 from .helpfcts import runexec
 
 
-def sp_qvszp(binaryname: str, arguments: list[str], calcname: str) -> int:
+def sp_qvszp(
+    binaryname: str, arguments: list[str], calcname: str, verbose: bool
+) -> int:
     """
     Proceeds the single point calculation itself.
 
@@ -36,6 +38,8 @@ def sp_qvszp(binaryname: str, arguments: list[str], calcname: str) -> int:
     outfile = binaryname + "_" + calcname + ".out"
     errfile = binaryname + "_" + calcname + ".err"
     e = runexec(binaryname, outfile, errfile, bin_args)
+    if verbose:
+        print("Arguments for ' ", binaryname, " : ", bin_args)
 
     return e
 

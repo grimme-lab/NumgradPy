@@ -49,5 +49,21 @@ def parser() -> argparse.ArgumentParser:
         help="Print more information to the console.",
         required=False,
     )
+    p.add_argument(
+        "-g",
+        "--gradient",
+        default=False,
+        action="store_true",
+        help="Calculate the gradient.",
+        required=False,
+    )
+    p.add_argument(
+        "-d",
+        "--dipole",
+        default=False,
+        action="store_true",
+        help="Calculate the dipole moment.",
+        required=False,
+    )
 
     return p

@@ -70,3 +70,23 @@ def write_tm_gradient(
                 file=f,
             )
         print("$end", file=f)
+
+
+def write_dipole(dipole: npt.NDArray[np.float64], outfile: str) -> None:
+    """
+    Write the dipole moment to a file.
+
+    Parameters
+    ----------
+    dipole : npt.NDArray[np.float64]
+        Dipole moment in Debye.
+    outfile : str
+        Name of the output file.
+    """
+
+    with open(outfile, "w", encoding="UTF-8") as f:
+        print("$dipole", file=f)
+        print(
+            f"{dipole[0]:18.12f} {dipole[1]:18.12f} {dipole[2]:18.12f}",
+            file=f,
+        )

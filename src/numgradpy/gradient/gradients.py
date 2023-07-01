@@ -45,6 +45,7 @@ def nuclear_gradient(
                 "qvSZP",
                 ["--struc", tmpstrucfile, "--outname", prefix + str(counter)],
                 str(counter),
+                verbose=verbose,
             )
             if not es:
                 raise RuntimeError("Single point calculation failed.")
@@ -59,6 +60,7 @@ def nuclear_gradient(
                 "qvSZP",
                 ["--struc", tmpstrucfile, "--outname", prefix + str(counter)],
                 str(counter),
+                verbose=verbose,
             )
             if not es:
                 raise RuntimeError("Single point calculation failed.")
@@ -111,3 +113,67 @@ def nuclear_gradient(
             )
 
     return gradient
+
+
+def efield_gradient(
+    struc: Structure,
+    strucfile: str,
+    fdiff: float,
+    startgbw: str,
+    verbose: bool,
+) -> npt.NDArray[np.float64]:
+    # set up a numpy tensor for the electric field gradient -> dipole moment
+    dipole = np.zeros((3), dtype=np.float64)
+    smspoinput: list[tuple[str, str]] = []
+    for j in range(3):
+        for i in range(2):
+            efield = np.zeros((3), dtype=np.float64)
+            if i == 0:
+                efield[j] = fdiff
+            else:
+                efield[j] = -fdiff
+            es = spq(
+                "qvSZP",
+                [
+                    "--struc",
+                    strucfile,
+                    "--outname",
+                    "efielddiff_" + str(j + 1) + "_" + str(i + 1),
+                    "--efield",
+                    str(efield[0]),
+                    str(efield[1]),
+                    str(efield[2]),
+                ],
+                str(2 * j + i + 1),
+                verbose=verbose,
+            )
+            if not es:
+                raise RuntimeError("Single point calculation failed.")
+            smspoinput.append(
+                (
+                    "orca",
+                    "efielddiff_" + str(j + 1) + "_" + str(i + 1),
+                )
+            )
+            # copy the existing GBW file to the new GBW file
+            shutil.copy2(
+                startgbw + ".gbw",
+                "efielddiff_" + str(j + 1) + "_" + str(i + 1) + ".gbw",
+            )
+
+    # run single point calculations of ORCA
+    with Pool(6) as p:
+        el = p.starmap(spo, smspoinput)
+        if not all(el):
+            raise RuntimeError(
+                "Single point calculation failed. Check the output files."
+            )
+
+    for j in range(3):
+        fname = "efielddiff_" + str(j + 1) + "_1.out"
+        eplus = get_orca_energy(fname)
+        fname = "efielddiff_" + str(j + 1) + "_2.out"
+        eminus = get_orca_energy(fname)
+        dipole[j] = (eplus - eminus) / (2 * fdiff)
+
+    return dipole

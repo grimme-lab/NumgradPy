@@ -9,8 +9,14 @@ from argparse import Namespace
 from ..constants import DefaultArguments
 from ..extprocs.singlepoint import sp_orca as spo
 from ..extprocs.singlepoint import sp_qvszp as spq
-from ..gradient.gradients import nuclear_gradient
-from ..io import Structure, get_orca_energy, write_tm_energy, write_tm_gradient
+from ..gradient.gradients import efield_gradient, nuclear_gradient
+from ..io import (
+    Structure,
+    get_orca_energy,
+    write_dipole,
+    write_tm_energy,
+    write_tm_gradient,
+)
 
 
 class Driver:
@@ -73,17 +79,27 @@ class Driver:
         write_tm_energy(eq_energy, "energy")
 
         # calculate nuclear gradient
-        gradient = nuclear_gradient(
-            struc, args.finitediff, self.prefix_eq, args.verbose
-        )
-
-        # print the gradient matrix in nice format
-        print("Gradient matrix:")
-        for i in range(struc.nat):
-            print(
-                f"{gradient[i, 0]:10.6f} {gradient[i, 1]:10.6f} {gradient[i, 2]:10.6f}"
+        if args.gradient:
+            gradient = nuclear_gradient(
+                struc, args.finitediff, self.prefix_eq, args.verbose
             )
-        write_tm_gradient(gradient, eq_energy, struc, "gradient")
+            # print the gradient matrix in nice format
+            print("Gradient matrix:")
+            for i in range(struc.nat):
+                print(
+                    f"{gradient[i, 0]:10.6f} \
+{gradient[i, 1]:10.6f} {gradient[i, 2]:10.6f}"
+                )
+            write_tm_gradient(gradient, eq_energy, struc, "gradient")
+        if args.dipole:
+            dipole = efield_gradient(
+                struc, args.struc, args.finitediff, self.prefix_eq, args.verbose
+            )
+            print(
+                f"Dipole moment vector / a.u.: \
+{dipole[0]:12.8f} {dipole[1]:12.8f} {dipole[2]:12.8f}"
+            )
+            write_dipole(dipole, "dipole.qvSZP")
 
     def eq_energy(self, eqstruc: Structure) -> float:
         """
@@ -100,6 +116,7 @@ class Driver:
             "qvSZP",
             ["--struc", "eq.xyz", "--outname", self.prefix_eq, "--mpi", "4"],
             self.prefix_eq,
+            verbose=self.args.verbose,
         )
         if not e:
             raise RuntimeError("Equilibrium energy calculation failed.")
