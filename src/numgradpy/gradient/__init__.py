@@ -2,4 +2,8 @@
 Gradient procedures.
 """
 
-from .gradients import nuclear_gradient  # , electronic_gradient
+from .gradients import (  # , electronic_gradient
+    dipole_gradient,
+    efield_gradient,
+    nuclear_gradient,
+)

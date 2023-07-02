@@ -116,22 +116,28 @@ def nuclear_gradient(
 
 
 def efield_gradient(
-    struc: Structure,
     strucfile: str,
     fdiff: float,
     startgbw: str,
     verbose: bool,
+    extefield: npt.NDArray[np.float64] = np.zeros((3), dtype=np.float64),
 ) -> npt.NDArray[np.float64]:
     # set up a numpy tensor for the electric field gradient -> dipole moment
+    if verbose:
+        print("External electric field:")
+        print(f"{extefield[0]:10.6f} {extefield[1]:10.6f} {extefield[2]:10.6f}")
     dipole = np.zeros((3), dtype=np.float64)
     smspoinput: list[tuple[str, str]] = []
     for j in range(3):
         for i in range(2):
-            efield = np.zeros((3), dtype=np.float64)
+            efield = copy.deepcopy(extefield)
             if i == 0:
-                efield[j] = fdiff
+                efield[j] = efield[j] + fdiff
             else:
-                efield[j] = -fdiff
+                efield[j] = efield[j] - fdiff
+            if verbose:
+                print("Effective electric field for dipole moment calculation:")
+                print(f"{efield[0]:10.6f} {efield[1]:10.6f} {efield[2]:10.6f}")
             es = spq(
                 "qvSZP",
                 [
@@ -177,3 +183,23 @@ def efield_gradient(
         dipole[j] = (eplus - eminus) / (2 * fdiff)
 
     return dipole
+
+
+def dipole_gradient(
+    strucfile: str,
+    fdiff: float,
+    startgbw: str,
+    verbose: bool,
+) -> npt.NDArray[np.float64]:
+    dipmomdiff = 0.5 * fdiff
+    # set up a numpy tensor for the electric field gradient -> dipole moment
+    alpha = np.zeros((3, 3), dtype=np.float64)
+    for j in range(3):
+        extefield = np.zeros((3), dtype=np.float64)
+        extefield[j] = fdiff
+        dipplus = efield_gradient(strucfile, dipmomdiff, startgbw, verbose, extefield)
+        extefield[j] = -fdiff
+        dipminus = efield_gradient(strucfile, dipmomdiff, startgbw, verbose, extefield)
+        alpha[:, j] = (dipplus - dipminus) / (2 * fdiff)
+
+    return alpha

@@ -25,7 +25,9 @@ def parser() -> argparse.ArgumentParser:
         "--finitediff",
         type=float,
         help="Finite difference that is used for the calculation.",
-        required=True,
+        # set the default to 5e-5 and make it not required
+        default=5e-5,
+        required=False,
     )
     p.add_argument(
         "-b",
@@ -63,6 +65,14 @@ def parser() -> argparse.ArgumentParser:
         default=False,
         action="store_true",
         help="Calculate the dipole moment.",
+        required=False,
+    )
+    p.add_argument(
+        "-a",
+        "--alpha",
+        default=False,
+        action="store_true",
+        help="Calculate the polarizability.",
         required=False,
     )
 

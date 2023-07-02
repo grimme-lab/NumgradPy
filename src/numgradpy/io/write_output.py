@@ -66,7 +66,9 @@ def write_tm_gradient(
             )
         for i in range(gradient.shape[0]):
             print(
-                f"{gradient[i, 0]:18.12f} {gradient[i, 1]:18.12f} {gradient[i, 2]:18.12f}",
+                f"{gradient[i, 0]:18.12f} \
+{gradient[i, 1]:18.12f} \
+{gradient[i, 2]:18.12f}",
                 file=f,
             )
         print("$end", file=f)
