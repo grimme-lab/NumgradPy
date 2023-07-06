@@ -8,4 +8,9 @@ calculation of the gradient of a function.
 
 from .parser import get_orca_energy
 from .structure import Structure
-from .write_output import write_dipole, write_tm_energy, write_tm_gradient
+from .write_output import (
+    write_dipole,
+    write_polarizability,
+    write_tm_energy,
+    write_tm_gradient,
+)

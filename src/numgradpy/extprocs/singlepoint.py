@@ -32,6 +32,17 @@ def sp_qvszp(
     qvszp_default_args = config["qvszp"]
     qvszp_arglist = create_arglist(qvszp_default_args)
 
+    # check if single members of the default arguments
+    # and the arguments from the command line
+    # are the same. If it is the case, take the command line arguments
+    # and delete the default arguments from the list.
+    for i in range(0, len(qvszp_arglist), 2):
+        for j in range(0, len(arguments), 2):
+            if qvszp_arglist[i] == arguments[j]:
+                qvszp_arglist[i + 1] = arguments[j + 1]
+                del arguments[j : j + 2]
+                break
+
     bin_args = qvszp_arglist + arguments
 
     # run preparation of single point input

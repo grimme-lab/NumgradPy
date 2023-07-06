@@ -180,7 +180,9 @@ def efield_gradient(
         eplus = get_orca_energy(fname)
         fname = "efielddiff_" + str(j + 1) + "_2.out"
         eminus = get_orca_energy(fname)
-        dipole[j] = (eplus - eminus) / (2 * fdiff)
+        dipole[j] = -(eplus - eminus) / (
+            2 * fdiff
+        )  # minus sign because of the definition of the dipole moment
 
     return dipole
 
@@ -200,6 +202,6 @@ def dipole_gradient(
         dipplus = efield_gradient(strucfile, dipmomdiff, startgbw, verbose, extefield)
         extefield[j] = -fdiff
         dipminus = efield_gradient(strucfile, dipmomdiff, startgbw, verbose, extefield)
-        alpha[:, j] = (dipplus - dipminus) / (2 * fdiff)
+        alpha[j, :] = (dipplus - dipminus) / (2 * fdiff)
 
     return alpha

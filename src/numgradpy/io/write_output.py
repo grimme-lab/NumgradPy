@@ -92,3 +92,37 @@ def write_dipole(dipole: npt.NDArray[np.float64], outfile: str) -> None:
             f"{dipole[0]:18.12f} {dipole[1]:18.12f} {dipole[2]:18.12f}",
             file=f,
         )
+
+
+def write_polarizability(polarizability: npt.NDArray[np.float64], outfile: str) -> None:
+    """
+    Write the polarizability to a file.
+
+    Parameters
+    ----------
+    polarizability : npt.NDArray[np.float64]
+        Polarizability in Bohr^3.
+    outfile : str
+        Name of the output file.
+    """
+
+    with open(outfile, "w", encoding="UTF-8") as f:
+        print("$polarizability", file=f)
+        print(
+            f"{polarizability[0,0]:18.12f} \
+{polarizability[0,1]:18.12f} \
+{polarizability[0,2]:18.12f}",
+            file=f,
+        )
+        print(
+            f"{polarizability[1,0]:18.12f} \
+{polarizability[1,1]:18.12f} \
+{polarizability[1,2]:18.12f}",
+            file=f,
+        )
+        print(
+            f"{polarizability[2,0]:18.12f} \
+{polarizability[2,1]:18.12f} \
+{polarizability[2,2]:18.12f}",
+            file=f,
+        )

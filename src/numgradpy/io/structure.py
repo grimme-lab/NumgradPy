@@ -120,8 +120,8 @@ class Structure:
             # NOTE: self.coordinates is a numpy array
             for atom, coordinate in zip(self.atoms, self.coordinates):
                 file.write(
-                    f"{atom:2s} {(coordinate[0] / AA2AU ):14.8f}\
- {(coordinate[1] / AA2AU ):14.8f} {(coordinate[2] / AA2AU ):14.8f}\n"
+                    f"{atom:2s} {(coordinate[0] / AA2AU ):20.14f}\
+ {(coordinate[1] / AA2AU ):20.14f} {(coordinate[2] / AA2AU ):20.14f}\n"
                 )
 
     def get_atoms(self) -> list[str]:
@@ -160,8 +160,8 @@ class Structure:
         print(f"{len(self.atoms)}\n")
         for atom, coordinate in zip(self.atoms, self.coordinates):
             print(
-                f"{atom:2s} {coordinate[0]:14.8f}\
- {coordinate[1]:14.8f} {coordinate[2]:14.8f}"
+                f"{atom:2s} {coordinate[0]:20.12f}\
+ {coordinate[1]:20.12f} {coordinate[2]:20.12f}"
             )
 
     # function for modifying the structure by adding or subtracting

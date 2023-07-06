@@ -4,6 +4,7 @@ Driver for the NumGradPy CLI.
 
 import os
 import shutil
+import time
 from argparse import Namespace
 
 from ..constants import DefaultArguments
@@ -14,6 +15,7 @@ from ..io import (
     Structure,
     get_orca_energy,
     write_dipole,
+    write_polarizability,
     write_tm_energy,
     write_tm_gradient,
 )
@@ -58,6 +60,8 @@ class Driver:
         """
         Run the driver.
         """
+
+        st = time.time()
 
         args = self.args
 
@@ -110,6 +114,10 @@ class Driver:
 {alpha[1, 0]:12.8f} {alpha[1, 1]:12.8f} {alpha[1, 2]:12.8f}\n\
 {alpha[2, 0]:12.8f} {alpha[2, 1]:12.8f} {alpha[2, 2]:12.8f}"
             )
+            write_polarizability(alpha, "alpha.qvSZP")
+
+        et = time.time()
+        print(f"Total execution time: {et-st:.2f} s")
 
     def eq_energy(self, eqstruc: Structure) -> float:
         """
