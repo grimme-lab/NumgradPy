@@ -273,7 +273,7 @@ def dipole_gradient_analytical(
             )
 
     for j in range(3):
-        fname = "efielddiff_" + str(j + 1) + "_1.out"
+        fname = "efielddiff_" + str(j + 1) + "_1_property.txt"
         dipplus = get_orca_dipolemoment(fname)
         if verbose:
             print(
@@ -281,7 +281,7 @@ def dipole_gradient_analytical(
 {fdiff} in direction {j + 1}:"
             )
             print(f"{dipplus[0]:10.6f} {dipplus[1]:10.6f} {dipplus[2]:10.6f}")
-        fname = "efielddiff_" + str(j + 1) + "_2.out"
+        fname = "efielddiff_" + str(j + 1) + "_2_property.txt"
         dipminus = get_orca_dipolemoment(fname)
         if verbose:
             print(

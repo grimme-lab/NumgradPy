@@ -53,18 +53,29 @@ def get_orca_dipolemoment(outfile: str) -> npt.NDArray[np.float64]:
     """
     dipolemom: npt.NDArray[np.float64] = np.zeros((), dtype=np.float64)
 
+    print(outfile)
     with open(outfile, encoding="UTF-8") as f:
         lines = f.readlines()
     dipolemomentfound = False
     for line in lines:
-        if "Total Dipole Moment" in line:
+        if "Total Dipole moment" in line:
+            # MM: the following code applies only to '< prefix >_properties.txt'
+            # dipole moment entries begin two lines later
             dipolemom = np.array(
                 [
-                    float(line.split()[4]),
-                    float(line.split()[5]),
-                    float(line.split()[6]),
+                    float(lines[lines.index(line) + 2].split()[1]),
+                    float(lines[lines.index(line) + 3].split()[1]),
+                    float(lines[lines.index(line) + 4].split()[1]),
                 ]
             )
+            # MM: the following code applies only to 'orca.out'
+            # dipolemom = np.array(
+            #     [
+            #         float(line.split()[4]),
+            #         float(line.split()[5]),
+            #         float(line.split()[6]),
+            #     ]
+            # )
             dipolemomentfound = True
     if not dipolemomentfound:
         raise RuntimeError("Dipole moment not found in ORCA output file.")
