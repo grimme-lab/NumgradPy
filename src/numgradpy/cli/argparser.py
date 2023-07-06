@@ -70,8 +70,9 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument(
         "-a",
         "--alpha",
+        nargs="?",
+        const=True,
         default=False,
-        action="store_true",
         help="Calculate the polarizability.",
         required=False,
     )

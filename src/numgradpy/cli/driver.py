@@ -10,7 +10,12 @@ from argparse import Namespace
 from ..constants import DefaultArguments
 from ..extprocs.singlepoint import sp_orca as spo
 from ..extprocs.singlepoint import sp_qvszp as spq
-from ..gradient.gradients import dipole_gradient, efield_gradient, nuclear_gradient
+from ..gradient.gradients import dipole_gradient_analytical as dpa
+from ..gradient.gradients import (
+    dipole_gradient_numdiff,
+    efield_gradient,
+    nuclear_gradient,
+)
 from ..io import (
     Structure,
     get_orca_energy,
@@ -105,9 +110,37 @@ class Driver:
             )
             write_dipole(dipole, "dipole.qvSZP")
         if args.alpha:
-            alpha = dipole_gradient(
-                args.struc, args.finitediff, self.prefix_eq, args.verbose
-            )
+            if args.alpha == "analytical":
+                alpha = dpa(
+                    args.struc,
+                    args.finitediff,
+                    self.prefix_eq,
+                    args.verbose,
+                )
+            if args.alpha == "numdiff":
+                if args.verbose:
+                    print(
+                        "Calculating polarizability tensor with \
+numerical differentiation."
+                    )
+                alpha = dipole_gradient_numdiff(
+                    args.struc,
+                    args.finitediff,
+                    self.prefix_eq,
+                    args.verbose,
+                )
+            else:
+                if args.verbose:
+                    print(
+                        "Calculating polarizability tensor with \
+analytical differentiation."
+                    )
+                alpha = dpa(
+                    args.struc,
+                    args.finitediff,
+                    self.prefix_eq,
+                    args.verbose,
+                )
             print(
                 f"Polarizability tensor / a.u.:\n\
 {alpha[0, 0]:12.8f} {alpha[0, 1]:12.8f} {alpha[0, 2]:12.8f}\n\

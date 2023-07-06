@@ -13,7 +13,7 @@ import numpy.typing as npt
 
 from ..extprocs.singlepoint import sp_orca as spo
 from ..extprocs.singlepoint import sp_qvszp as spq
-from ..io import Structure, get_orca_energy
+from ..io import Structure, get_orca_dipolemoment, get_orca_energy
 
 
 def nuclear_gradient(
@@ -187,7 +187,7 @@ def efield_gradient(
     return dipole
 
 
-def dipole_gradient(
+def dipole_gradient_numdiff(
     strucfile: str,
     fdiff: float,
     startgbw: str,
@@ -200,8 +200,96 @@ def dipole_gradient(
         extefield = np.zeros((3), dtype=np.float64)
         extefield[j] = fdiff
         dipplus = efield_gradient(strucfile, dipmomdiff, startgbw, verbose, extefield)
+        if verbose:
+            print(
+                f"Dipole moment for effective electric field \
+{fdiff} in direction {j + 1}:"
+            )
+            print(f"{dipplus[0]:10.6f} {dipplus[1]:10.6f} {dipplus[2]:10.6f}")
         extefield[j] = -fdiff
         dipminus = efield_gradient(strucfile, dipmomdiff, startgbw, verbose, extefield)
+        if verbose:
+            print(
+                f"Dipole moment for effective electric field \
+{-fdiff} in direction {j + 1}:"
+            )
+            print(f"{dipminus[0]:10.6f} {dipminus[1]:10.6f} {dipminus[2]:10.6f}")
+        alpha[j, :] = (dipplus - dipminus) / (2 * fdiff)
+
+    return alpha
+
+
+def dipole_gradient_analytical(
+    strucfile: str,
+    fdiff: float,
+    startgbw: str,
+    verbose: bool,
+) -> npt.NDArray[np.float64]:
+    smspoinput: list[tuple[str, str]] = []
+    alpha = np.zeros((3, 3), dtype=np.float64)
+    for j in range(3):
+        for i in range(2):
+            efield = np.zeros((3), dtype=np.float64)
+            if i == 0:
+                efield[j] = efield[j] + fdiff
+            else:
+                efield[j] = efield[j] - fdiff
+            if verbose:
+                print("Effective electric field for polarizability calculation:")
+                print(f"{efield[0]:10.6f} {efield[1]:10.6f} {efield[2]:10.6f}")
+            es = spq(
+                "qvSZP",
+                [
+                    "--struc",
+                    strucfile,
+                    "--outname",
+                    "efielddiff_" + str(j + 1) + "_" + str(i + 1),
+                    "--efield",
+                    str(efield[0]),
+                    str(efield[1]),
+                    str(efield[2]),
+                ],
+                str(2 * j + i + 1),
+                verbose=verbose,
+            )
+            if not es:
+                raise RuntimeError("Single point calculation failed.")
+            smspoinput.append(
+                (
+                    "orca",
+                    "efielddiff_" + str(j + 1) + "_" + str(i + 1),
+                )
+            )
+            # copy the existing GBW file to the new GBW file
+            shutil.copy2(
+                startgbw + ".gbw",
+                "efielddiff_" + str(j + 1) + "_" + str(i + 1) + ".gbw",
+            )
+    with Pool(6) as p:
+        el = p.starmap(spo, smspoinput)
+        if not all(el):
+            raise RuntimeError(
+                "Single point calculation failed. Check the output files."
+            )
+
+    for j in range(3):
+        fname = "efielddiff_" + str(j + 1) + "_1.out"
+        dipplus = get_orca_dipolemoment(fname)
+        if verbose:
+            print(
+                f"Dipole moment for effective electric field \
+{fdiff} in direction {j + 1}:"
+            )
+            print(f"{dipplus[0]:10.6f} {dipplus[1]:10.6f} {dipplus[2]:10.6f}")
+        fname = "efielddiff_" + str(j + 1) + "_2.out"
+        dipminus = get_orca_dipolemoment(fname)
+        if verbose:
+            print(
+                f"Dipole moment for effective electric field \
+{-fdiff} in direction {j + 1}:"
+            )
+            print(f"{dipminus[0]:10.6f} {dipminus[1]:10.6f} {dipminus[2]:10.6f}")
+
         alpha[j, :] = (dipplus - dipminus) / (2 * fdiff)
 
     return alpha
