@@ -53,7 +53,6 @@ def get_orca_dipolemoment(outfile: str) -> npt.NDArray[np.float64]:
     """
     dipolemom: npt.NDArray[np.float64] = np.zeros((), dtype=np.float64)
 
-    print(outfile)
     with open(outfile, encoding="UTF-8") as f:
         lines = f.readlines()
     dipolemomentfound = False
