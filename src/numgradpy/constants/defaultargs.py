@@ -87,12 +87,11 @@ class DefaultArguments:
 
     def qvszp_def_args(self) -> dict[str, str | object]:
         qvszp_defargs = {
-            "basisfile": "/home/marcel/source_rest/qvSZP/basisq",
-            "ecpfile": "/home/marcel/source_rest/qvSZP/ecpq",
+            "bfile": "/home/marcel/source_rest/qvSZP/q-vSZP_basis/basisq",
+            "efile": "/home/marcel/source_rest/qvSZP/q-vSZP_basis/ecpq",
             "mpi": 1,
             "guess": "hueckel",
             "defgrid": 3,
             "conv": "VeryTightSCF",
-            "rdq": None,
         }
         return qvszp_defargs
