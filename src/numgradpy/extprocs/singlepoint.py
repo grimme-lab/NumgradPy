@@ -64,7 +64,8 @@ def create_arglist(argdict: dict[str, object]) -> list[str]:
 
     for key, value in argdict.items():
         arglist.append("--" + key)
-        arglist.append(str(value))
+        if value is not None:
+            arglist.append(str(value))
 
     return arglist
 

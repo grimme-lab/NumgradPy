@@ -90,7 +90,7 @@ class Driver:
         # calculate nuclear gradient
         if args.gradient:
             gradient = nuclear_gradient(
-                struc, args.finitediff, self.prefix_eq, args.verbose
+                struc, args.finitediff, self.prefix_eq, args.binary, args.verbose
             )
             # print the gradient matrix in nice format
             print("Gradient matrix:")
@@ -158,14 +158,15 @@ analytical differentiation."
         """
 
         # delete the following files if they are present
-        if os.path.exists(self.prefix_eq + ".gbw"):
-            os.remove(self.prefix_eq + ".gbw")
-        if os.path.exists(self.prefix_eq + ".densities"):
-            os.remove(self.prefix_eq + ".densities")
+        # NOTE: Why are these files deleted? Makes the following calculation way faster?
+        # if os.path.exists(self.prefix_eq + ".gbw"):
+        #     os.remove(self.prefix_eq + ".gbw")
+        # if os.path.exists(self.prefix_eq + ".densities"):
+        #     os.remove(self.prefix_eq + ".densities")
         Structure.write_xyz(eqstruc, self.prefix_eq + ".xyz", verbose=self.args.verbose)
         e = spq(
-            "qvSZP",
-            ["--struc", "eq.xyz", "--outname", self.prefix_eq, "--mpi", "4"],
+            self.args.binary,
+            ["--struc", "eq.xyz", "--outname", self.prefix_eq, "--mpi", "6"],
             self.prefix_eq,
             verbose=self.args.verbose,
         )

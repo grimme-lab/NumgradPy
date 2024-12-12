@@ -20,6 +20,7 @@ def nuclear_gradient(
     struc: Structure,
     fdiff: float,
     startgbw: str,
+    binaryname: str,
     verbose: bool,
 ) -> npt.NDArray[np.float64]:
     # set up a numpy tensor for the gradient
@@ -42,7 +43,7 @@ def nuclear_gradient(
             tmpstrucfile = prefix + str(counter) + ".xyz"
             struc_mod.write_xyz(tmpstrucfile, verbose=verbose)
             es = spq(
-                "qvSZP",
+                binaryname,
                 ["--struc", tmpstrucfile, "--outname", prefix + str(counter)],
                 str(counter),
                 verbose=verbose,
@@ -57,7 +58,7 @@ def nuclear_gradient(
             tmpstrucfile = prefix + str(counter) + ".xyz"
             struc_mod.write_xyz(tmpstrucfile, verbose=verbose)
             es = spq(
-                "qvSZP",
+                binaryname,
                 ["--struc", tmpstrucfile, "--outname", prefix + str(counter)],
                 str(counter),
                 verbose=verbose,

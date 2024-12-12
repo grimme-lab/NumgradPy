@@ -60,8 +60,8 @@ class DefaultArguments:
     def check_argument(self, program: str, key: str, value: str | int | float) -> None:
         if program == "qvszp":
             qvszp_defargs = self.qvszp_def_args()
-            if key not in qvszp_defargs:
-                raise ValueError("Invalid argument name in ~/.numgradpyrc.")
+            # if key not in qvszp_defargs: # don't need this check, prevents user-defined arguments that are not in the default arguments
+            #     raise ValueError("Invalid argument name in ~/.numgradpyrc.")
 
             if key == "mpi":
                 try:
@@ -90,7 +90,7 @@ class DefaultArguments:
             "bfile": "/home/marcel/source_rest/qvSZP/q-vSZP_basis/basisq",
             "efile": "/home/marcel/source_rest/qvSZP/q-vSZP_basis/ecpq",
             "mpi": 1,
-            "guess": "hueckel",
+            "guess": "PModel",
             "defgrid": 3,
             "conv": "VeryTightSCF",
         }
